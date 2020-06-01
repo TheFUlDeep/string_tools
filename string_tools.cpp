@@ -125,8 +125,6 @@ namespace string_tools
 	
 	string DequeToString(const deque<string> &deq, const string &pattern = "")
 	{
-		if (deq.empty()) return string("");
-		
 		string res = "";
 		for (auto str : deq)
 		{
