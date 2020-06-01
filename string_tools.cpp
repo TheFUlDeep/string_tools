@@ -2,14 +2,18 @@
 #include <string>
 #include <deque>
 
+//TODO поменять эксэпшны на свапы
+
 namespace string_tools
 {
     using namespace std;
     
 	const auto STRINGNPOS = string::npos;
 	
-	string& RemoveSymbolFromSides(string &line, const char &symbol, const bool &front = true, const bool &back = true)
+	string RemoveSymbolFromSides(const string &line1, const char &symbol, const bool &front = true, const bool &back = true)
 	{
+		if (line1.length() == 0) return "";
+		auto line = line1;
 		if (front)
 		{
 			while (line.front() == symbol)
@@ -40,9 +44,11 @@ namespace string_tools
 	}
 	
 	
-	string& RemoveSymbol(string &str, const char &symbol, const size_t &startpos = 0, const size_t &endpos = STRINGNPOS)
+	string RemoveSymbol(const string &str1, const char &symbol, const size_t &startpos = 0, const size_t &endpos = STRINGNPOS)
 	{
+		if (str1.length() == 0) return "";
 		if (startpos > endpos) throw exception("wrong startpos and endpos");
+		auto str = str1;
 		auto pos = str.find(symbol);
 		while (pos != STRINGNPOS && pos >= startpos && pos <= endpos)
 		{
@@ -58,9 +64,11 @@ namespace string_tools
 	}
 	
 	
-	string& RemovePatternFromSides(string &str, const string &pattern, const bool &front = true, const bool &back = true)
+	string RemovePatternFromSides(const string &str1, const string &pattern, const bool &front = true, const bool &back = true)
 	{
+		if (str1.length() == 0) return "";
 		if (startpos > endpos) throw exception("wrong startpos and endpos");
+		auto str = str1;
 		const auto patternlen = pattern.length();
 		
 		if (front)
@@ -85,11 +93,13 @@ namespace string_tools
 				newpos--;
 			}
 		}
+		return str;
 	}
 	
 	
 	string Sub(const string &str, const size_t &startpos = 0, const size_t &endpos = STRINGNPOS)
 	{
+		if (str.length() == 0) return "";
 		if (startpos > endpos) throw exception("wrong startpos and endpos");
 		if (endpos + 2 > str.length()) return str.substr(startpos);
 		else return str.substr(startpos, endpos - startpos + 1);
@@ -98,6 +108,7 @@ namespace string_tools
 	
 	deque<string> StringExplode(const string &str, const string &pattern)
 	{
+		if (str.length() == 0) return "";
 		deque<string> deq;
 		const auto patternlen = pattern.length();
 		const auto strlen = str.length();
@@ -133,6 +144,7 @@ namespace string_tools
 	
 	string GSub(const string &str1, const string &oldpattern, const string &newpattern, const size_t &startpos = 0, const size_t &endpos = STRINGNPOS)
 	{
+		if (str1.length() == 0) return "";
 		if (startpos > endpos) throw exception("wrong startpos and endpos");
 		auto str = str1;
 		if (oldpattern == newpattern) return str;
@@ -156,5 +168,27 @@ namespace string_tools
 		const auto patternlen = pattern.length();
 		res.erase(res.length() - patternlen,patternlen);
 		return res;
+	}
+	
+	string SwapParts(const string &str, const size_t &startpos1, const size_t &endpos1, const size_t &startpos2, const size_t &endpos2)
+	{
+		const auto strlen = str.length();
+		if (strlen == 0) return "";
+		
+		if (startpos1 > endpos1 || startpos2 > endpos2 || endpos1 >= startpos2) throw exception("wrong startpos and endpos");
+		
+		string prev = "";
+		if (startpos1 != 0) prev = Sub(str, 0, startpos1 - 1);
+		
+		string post = "";
+		if (endpos2 < strlen - 1) prev = Sub(str, endpos2 + 1);
+		
+		string between = "";
+		if (startpos2 - endpos1 > 1) between = Sub(endpos1 + 1, startpos2 - 1);
+		
+		auto segment1 = Sub(str, startpos1, endpos1);
+		auto segment2 = Sub(str, startpos2, endpos2);
+		
+		return (prev + segment2 + between + segment1 + post);
 	}
 }
