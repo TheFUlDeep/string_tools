@@ -58,11 +58,33 @@ namespace string_tools
 	}
 	
 	
-	//TODO подумать как свести количество erase'ов к минимуму
-	//если повезет, то это будет ReplacePattern(str,pattern,"")
-	string& RemovePatternFromSides(string &str, const string &pattern, const size_t &startpos = 0, const size_t &endpos = STRINGNPOS)
+	string& RemovePatternFromSides(string &str, const string &pattern, const bool &front = true, const bool &back = true)
 	{
 		if (startpos > endpos) throw exception("wrong startpos and endpos");
+		const auto patternlen = pattern.length();
+		
+		if (front)
+		{
+			while (str.find(pattern) == 0)
+			{
+				size_t newpos = patternlen;
+				//не выбросится ли исключение, если newpos будет за пределами стринга?//TODO проверить
+				while (str.find(pattern, newpos) == newpos) newpos += patternlen;
+				str.erase(0,newpos)
+			}
+		}
+		
+		if (back)
+		{
+			size_t newpos = str.length() - patternlen;
+			while (str.rfind(pattern) == newpos)
+			{
+				//не выбросится ли исключение, если newpos - 1 будет за пределами стринга?//TODO проверить
+				while (str.rfind(pattern, newpos - 1) == newpos - patternlen) newpos -= patternlen;
+				str.erase(newpos);
+				newpos--;
+			}
+		}
 	}
 	
 	
@@ -113,9 +135,10 @@ namespace string_tools
 	{
 		if (startpos > endpos) throw exception("wrong startpos and endpos");
 		auto str = str1;
+		if (oldpattern == newpattern) return str;
 		const auto oldpatternlen = oldpattern.length();
 		auto startfind = str.find(oldpattern);
-		while (startfind != STRINGNPOS && startfind >= startpos && (startfind+oldpatternlen-1) <= endpos)
+		while (startfind != STRINGNPOS && startfind >= startpos && startfind + oldpatternlen - 1 <= endpos)
 		{
 			str.replace(startfind, oldpatternlen, newpattern);
 			startfind = str.find(oldpattern);
